@@ -3,6 +3,14 @@
 
 typedef int tvalue;
 
+#define ERROR_NULL_MATRIX 1
+#define ERROR_NULL_SADDLE_POINTS_STORAGE 3
+#define ERROR_NULL_SADDLE_POINTS_COUNT_STORAGE 4
+#define ERROR_NULL_COMPARER 5
+#define ERROR_MEMORY_ALLOCATION 6
+#define ERROR_NULL_ROW 2
+#define ERROR_EMPTY_MATRIX 7
+
 int find_saddle_points(tvalue const * const *matrix, size_t matrix_rows_count, size_t matrix_columns_count, size_t ***found_saddle_points_storage, size_t *found_saddle_points_count_storage, int (*comparer)(tvalue const *, tvalue const *), int is_comparison_is_strict);
 
 int int_comparer(tvalue const *a, tvalue const *b) {
@@ -10,11 +18,11 @@ int int_comparer(tvalue const *a, tvalue const *b) {
 }
 
 int find_saddle_points(tvalue const * const *matrix, size_t matrix_rows_count, size_t matrix_columns_count, size_t ***found_saddle_points_storage, size_t *found_saddle_points_count_storage, int (*comparer)(tvalue const *, tvalue const *), int is_comparison_is_strict) {
-    if (matrix == NULL) return 1;
-    if (found_saddle_points_storage == NULL) return 3;
-    if (found_saddle_points_count_storage == NULL) return 4;
-    if (comparer == NULL) return 5;
-    if (matrix_rows_count == 0 || matrix_columns_count == 0) return 1;
+    if (matrix == NULL) return ERROR_NULL_MATRIX;
+    if (found_saddle_points_storage == NULL) return ERROR_NULL_SADDLE_POINTS_STORAGE;
+    if (found_saddle_points_count_storage == NULL) return ERROR_NULL_SADDLE_POINTS_COUNT_STORAGE;
+    if (comparer == NULL) return ERROR_NULL_COMPARER;
+    if (matrix_rows_count == 0 || matrix_columns_count == 0) return ERROR_NULL_MATRIX;
 
     size_t **saddle_points = NULL;
     size_t count = 0;
@@ -25,11 +33,11 @@ int find_saddle_points(tvalue const * const *matrix, size_t matrix_rows_count, s
     tvalue current_value;
 
     for (i = 0; i < matrix_rows_count; i++) {
-        if (matrix[i] == NULL) return 2;
+        if (matrix[i] == NULL) return ERROR_NULL_ROW;
 
         for (j = 0; j < matrix_columns_count; j++) {
             current_value = matrix[i][j];
-            int is_saddle_point = 1;
+            int is_saddle_point = ERROR_NULL_MATRIX;
 
             for (k = 0; k < matrix_columns_count; k++) {
                 if (k != j) {
@@ -61,7 +69,7 @@ int find_saddle_points(tvalue const * const *matrix, size_t matrix_rows_count, s
                         free(saddle_points[k]);
                     }
                     free(saddle_points);
-                    return 6;
+                    return ERROR_MEMORY_ALLOCATION;
                 }
             
             new_saddle_points = temp_saddle_points;
@@ -72,7 +80,7 @@ int find_saddle_points(tvalue const * const *matrix, size_t matrix_rows_count, s
                         free(saddle_points[k]);
                     }
                     free(saddle_points);
-                    return 6;
+                    return ERROR_MEMORY_ALLOCATION;
                 }
                 saddle_points[count][0] = i;
                 saddle_points[count][1] = j;
