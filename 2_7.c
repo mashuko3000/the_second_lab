@@ -123,12 +123,15 @@ int findKaprekarNumbers(char ***result, int base, int count, ...) {
         if (isKaprekar(num)) {
             (*result)[result_count] = strdup(num_str);
             if ((*result)[result_count] == NULL) {
-                va_end(args);
+                for (int j = 0; j < result_count; j++) {
+                    free((*result)[j]);
+                }
                 free(*result);
+                va_end(args);
                 return ERROR_MEMORY_ALLOCATION;
             }
             result_count++;
-        }
+            
     }
 
     va_end(args);
